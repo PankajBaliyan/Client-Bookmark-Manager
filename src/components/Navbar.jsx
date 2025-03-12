@@ -107,7 +107,7 @@ const Navbar = ({ toggleSidebar, darkMode, toggleDarkMode, openImportModal, onLo
                 
                 {/* User dropdown menu */}
                 {userDropdownOpen && (
-                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in">
+                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
                     <div className="py-1">
                       <button
                         onClick={handleProfile}
@@ -138,7 +138,7 @@ const Navbar = ({ toggleSidebar, darkMode, toggleDarkMode, openImportModal, onLo
                 
                 {/* Settings dropdown menu */}
                 {settingsDropdownOpen && (
-                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in">
+                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
                     <div className="py-1">
                       <button
                         onClick={handleImport}
