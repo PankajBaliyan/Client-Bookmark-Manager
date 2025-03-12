@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import {signupUser} from "../services/auth_service.js";
 import { FiBookmark, FiArrowRight, FiUser, FiLock, FiMail, FiArrowLeft } from 'react-icons/fi';
 
 const Signup = () => {
@@ -7,29 +8,42 @@ const Signup = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     // Validate form
-    if (!username || !password || !email) {
+    if (!username || !password || !email || !name) {
       setError('All fields are required');
       setLoading(false);
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      // For demo purposes, automatically log in after signup
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('user', JSON.stringify({ username, email }));
-      navigate('/home');
-      setLoading(false);
-    }, 800);
+    // API Call to create user
+    try {
+      const formData = {
+        username: username,
+        name: name,
+        email: email,
+        password: password
+      }
+      const response = await signupUser(formData)
+      if (response.status !== "error") {
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('user', JSON.stringify({ username }));
+        navigate('/home');
+      } else {
+        setError(response?.msg || 'Invalid username or password');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error creating user:', error);
+    }
   };
 
   return (
@@ -91,6 +105,24 @@ const Signup = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                     placeholder="Choose username"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-white/90 text-sm font-medium mb-2">
+                  Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiUser className="h-5 w-5 text-white/50" />
+                  </div>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                    placeholder="Choose name"
                   />
                 </div>
               </div>

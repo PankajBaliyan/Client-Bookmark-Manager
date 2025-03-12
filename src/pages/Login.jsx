@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import {loginUser} from "../services/auth_service.js";
 import { FiBookmark, FiArrowRight, FiUser, FiLock, FiArrowLeft } from 'react-icons/fi';
 
 const Login = () => {
@@ -9,7 +10,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -21,19 +22,33 @@ const Login = () => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
-      // Check for default credentials
-      if (username === 'root' && password === '123456') {
-        // Store auth state in localStorage
+    // Check for default credentials
+    if (username === 'root' && password === '123456') {
+      // Store auth state in localStorage
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify({ username }));
+      navigate('/home');
+      return
+    }
+
+    // API Call to login user
+    try {
+      const formData = {
+        username: username,
+        password: password
+      }
+      const response = await loginUser(formData)
+      if (response.status !== "error") {
         localStorage.setItem('isAuthenticated', 'true');
         localStorage.setItem('user', JSON.stringify({ username }));
         navigate('/home');
       } else {
-        setError('Invalid username or password');
+        setError(response?.msg || 'Invalid username or password');
+        setLoading(false);
       }
-      setLoading(false);
-    }, 800);
+    } catch (error) {
+      console.error('Error Logging user:', error);
+    }
   };
 
   return (
