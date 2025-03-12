@@ -1,53 +1,60 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import {loginUser} from "../services/auth_service.js";
-import { FiBookmark, FiArrowRight, FiUser, FiLock, FiArrowLeft } from 'react-icons/fi';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { loginUser } from "../services/auth_service.js";
+import {
+  FiBookmark,
+  FiArrowRight,
+  FiUser,
+  FiLock,
+  FiArrowLeft,
+} from "react-icons/fi";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     // Validate form
     if (!username || !password) {
-      setError('Username and password are required');
+      setError("Username and password are required");
       setLoading(false);
       return;
     }
 
     // Check for default credentials
-    if (username === 'root' && password === '123456') {
+    if (username === "root" && password === "123456") {
       // Store auth state in localStorage
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('user', JSON.stringify({ username }));
-      navigate('/home');
-      return
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("user", JSON.stringify({ username }));
+      navigate("/home");
+      return;
     }
+    console.log("o2");
 
     // API Call to login user
     try {
       const formData = {
         username: username,
-        password: password
-      }
-      const response = await loginUser(formData)
+        password: password,
+      };
+      const response = await loginUser(formData);
       if (response.status !== "error") {
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('user', JSON.stringify({ username }));
-        navigate('/home');
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("user", JSON.stringify({ username }));
+        navigate("/home");
       } else {
-        setError(response?.msg || 'Invalid username or password');
+        setError(response?.msg || "Invalid username or password");
         setLoading(false);
       }
     } catch (error) {
-      console.error('Error Logging user:', error);
+      console.error("Error Logging user:", error);
     }
   };
 
@@ -60,23 +67,26 @@ const Login = () => {
             <FiBookmark className="h-8 w-8" />
           </div>
         </div>
-        
+
         {/* Login Form */}
         <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 overflow-hidden shadow-glow">
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">Login</h2>
-              <Link to="/" className="text-white/70 hover:text-white flex items-center">
+              <Link
+                to="/"
+                className="text-white/70 hover:text-white flex items-center"
+              >
                 <FiArrowLeft className="mr-1" /> Back
               </Link>
             </div>
-            
+
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-md text-white text-sm">
                 {error}
               </div>
             )}
-            
+
             <form onSubmit={handleLogin}>
               <div className="mb-4">
                 <label className="block text-white/90 text-sm font-medium mb-2">
@@ -95,7 +105,7 @@ const Login = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="mb-6">
                 <label className="block text-white/90 text-sm font-medium mb-2">
                   Password
@@ -113,7 +123,7 @@ const Login = () => {
                   />
                 </div>
               </div>
-              
+
               <button
                 type="submit"
                 disabled={loading}
@@ -127,14 +137,14 @@ const Login = () => {
                   </>
                 )}
               </button>
-              
+
               <div className="mt-4 text-center text-white/70 text-sm">
                 <p>Default login: username "root", password "123456"</p>
               </div>
-              
+
               <div className="mt-6 text-center">
                 <p className="text-white/70">
-                  Don't have an account?{' '}
+                  Don't have an account?{" "}
                   <Link to="/signup" className="text-white hover:underline">
                     Sign up
                   </Link>
