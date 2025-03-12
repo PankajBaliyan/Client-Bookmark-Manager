@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FiMenu,
@@ -7,14 +7,40 @@ import {
   FiTag,
   FiGrid,
   FiSearch,
-  FiSettings,
-  FiUpload,
   FiSun,
   FiMoon,
   FiX,
   FiUser,
   FiLogOut,
+  FiChevronDown,
+  FiUpload,
 } from "react-icons/fi";
+
+const Dropdown = ({ trigger, menu, isOpen, setIsOpen }) => {
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [setIsOpen]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      {trigger}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
+          {menu}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Navbar = ({
   toggleSidebar,
@@ -25,37 +51,11 @@ const Navbar = ({
   username,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
-  };
-
-  const toggleSettingsDropdown = () => {
-    setSettingsDropdownOpen(!settingsDropdownOpen);
-    setUserDropdownOpen(false);
-  };
-
-  const toggleUserDropdown = () => {
-    setUserDropdownOpen(!userDropdownOpen);
-    setSettingsDropdownOpen(false);
-  };
-
-  const handleNavigation = (path) => {
-    navigate(path);
-    setMobileMenuOpen(false);
-  };
-
-  const handleImport = () => {
-    setSettingsDropdownOpen(false);
-    openImportModal();
-  };
-
-  const handleSettings = () => {
-    setSettingsDropdownOpen(false);
-    navigate("/settings");
   };
 
   const handleProfile = () => {
@@ -127,78 +127,12 @@ const Navbar = ({
               </Link>
             </div>
 
-            {/* Right side - User, Settings and theme toggle */}
+            {/* Right side - Theme toggle, Upload and Profile */}
             <div className="flex items-center">
-              {/* User dropdown */}
-              <div className="relative mr-2">
-                <button
-                  onClick={toggleUserDropdown}
-                  className="flex items-center px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200"
-                  aria-label="User menu"
-                >
-                  <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center mr-2">
-                    <FiUser className="h-4 w-4" />
-                  </div>
-                  <span className="hidden md:block">{username || "User"}</span>
-                </button>
-
-                {/* User dropdown menu */}
-                {console.log("userDropdownOpen", userDropdownOpen)}
-                {userDropdownOpen && (
-                  <div className="origin-top-right fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
-                    <div className="py-1">
-                      <button
-                        onClick={handleProfile}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                      >
-                        <FiUser className="mr-2" /> Profile
-                      </button>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                      >
-                        <FiLogOut className="mr-2" /> Logout
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Settings dropdown */}
-              <div className="relative ml-1">
-                <button
-                  onClick={toggleSettingsDropdown}
-                  className="p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
-                  aria-label="Settings"
-                >
-                  <FiSettings className="h-6 w-6" />
-                </button>
-
-                {/* Settings dropdown menu */}
-                {settingsDropdownOpen && (
-                  <div className="origin-top-right fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
-                    <div className="py-1">
-                      <button
-                        onClick={handleImport}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                      >
-                        <FiUpload className="mr-2" /> Import Bookmarks
-                      </button>
-                      <button
-                        onClick={handleSettings}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
-                      >
-                        <FiSettings className="mr-2" /> Settings
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* Theme toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="ml-3 p-2 rounded-md hover:bg-white/10 transition-all duration-200 hover:rotate-12"
+                className="p-2 rounded-md hover:bg-white/10 transition-all duration-200 hover:rotate-12"
                 aria-label="Toggle dark mode"
               >
                 {darkMode ? (
@@ -207,6 +141,50 @@ const Navbar = ({
                   <FiMoon className="h-6 w-6" />
                 )}
               </button>
+
+              {/* Upload button */}
+              <button
+                onClick={openImportModal}
+                className="ml-2 px-3 py-2 rounded-md hover:bg-white/10 transition-all duration-200 flex items-center hover:scale-105"
+                aria-label="Import bookmarks"
+              >
+                <FiUpload className="h-5 w-5 mr-1" />
+                <span className="hidden md:block">Import</span>
+              </button>
+
+              {/* User dropdown */}
+              <Dropdown
+                isOpen={userDropdownOpen}
+                setIsOpen={setUserDropdownOpen}
+                trigger={
+                  <button
+                    onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                    className="flex items-center px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 ml-2"
+                  >
+                    <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center mr-2">
+                      <FiUser className="h-4 w-4" />
+                    </div>
+                    <span className="hidden md:block">{username || "User"}</span>
+                    <FiChevronDown className="ml-2 h-4 w-4" />
+                  </button>
+                }
+                menu={
+                  <div className="py-1">
+                    <button
+                      onClick={handleProfile}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                    >
+                      <FiUser className="mr-2" /> Profile
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                    >
+                      <FiLogOut className="mr-2" /> Logout
+                    </button>
+                  </div>
+                }
+              />
 
               {/* Mobile menu button */}
               <button
@@ -228,48 +206,41 @@ const Navbar = ({
         {mobileMenuOpen && (
           <div className="md:hidden animate-fade-in">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-b from-primary-dark to-primary dark:from-gray-900 dark:to-gray-800">
-              <button
-                onClick={() => handleNavigation("/home")}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+              <Link
+                to="/home"
+                className="block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <FiHome className="mr-2" /> Home
-              </button>
-              <button
-                onClick={() => handleNavigation("/bookmarks")}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+              </Link>
+              <Link
+                to="/bookmarks"
+                className="block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <FiBookmark className="mr-2" /> Bookmarks
-              </button>
-              <button
-                onClick={() => handleNavigation("/categories")}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+              </Link>
+              <Link
+                to="/categories"
+                className="block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <FiGrid className="mr-2" /> Categories
-              </button>
-              <button
-                onClick={() => handleNavigation("/tags")}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+              </Link>
+              <Link
+                to="/tags"
+                className="block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <FiTag className="mr-2" /> Tags
-              </button>
-              <button
-                onClick={() => handleNavigation("/search")}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+              </Link>
+              <Link
+                to="/search"
+                className="block px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 <FiSearch className="mr-2" /> Search
-              </button>
-              <button
-                onClick={handleProfile}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
-              >
-                <FiUser className="mr-2" /> Profile
-              </button>
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center"
-              >
-                <FiLogOut className="mr-2" /> Logout
-              </button>
+              </Link>
             </div>
           </div>
         )}
