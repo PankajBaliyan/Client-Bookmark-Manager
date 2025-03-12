@@ -38,6 +38,11 @@ const Navbar = ({ toggleSidebar, darkMode, toggleDarkMode, openImportModal, onLo
     navigate('/settings')
   }
   
+  const handleProfile = () => {
+    setUserDropdownOpen(false)
+    navigate('/profile')
+  }
+  
   const handleLogout = () => {
     setUserDropdownOpen(false)
     onLogout()
@@ -104,6 +109,12 @@ const Navbar = ({ toggleSidebar, darkMode, toggleDarkMode, openImportModal, onLo
                 {userDropdownOpen && (
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in">
                     <div className="py-1">
+                      <button
+                        onClick={handleProfile}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                      >
+                        <FiUser className="mr-2" /> Profile
+                      </button>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
@@ -185,6 +196,9 @@ const Navbar = ({ toggleSidebar, darkMode, toggleDarkMode, openImportModal, onLo
               </button>
               <button onClick={() => handleNavigation('/search')} className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center">
                 <FiSearch className="mr-2" /> Search
+              </button>
+              <button onClick={handleProfile} className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center">
+                <FiUser className="mr-2" /> Profile
               </button>
               <button onClick={handleLogout} className="w-full text-left px-3 py-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center">
                 <FiLogOut className="mr-2" /> Logout

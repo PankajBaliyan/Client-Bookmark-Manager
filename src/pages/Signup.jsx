@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {signupUser} from "../services/auth_service.js";
-import { FiBookmark, FiArrowRight, FiUser, FiLock, FiMail, FiArrowLeft } from 'react-icons/fi';
+import { FiBookmark, FiArrowRight, FiUser, FiLock, FiMail, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -11,6 +11,7 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -44,6 +45,10 @@ const Signup = () => {
     } catch (error) {
       console.error('Error creating user:', error);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -136,12 +141,19 @@ const Signup = () => {
                     <FiLock className="h-5 w-5 text-white/50" />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                    className="w-full pl-10 pr-10 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                     placeholder="Create password"
                   />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
               

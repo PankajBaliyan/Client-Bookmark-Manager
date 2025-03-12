@@ -1,61 +1,59 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../services/auth_service.js";
-import {
-  FiBookmark,
-  FiArrowRight,
-  FiUser,
-  FiLock,
-  FiArrowLeft,
-} from "react-icons/fi";
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import {loginUser} from "../services/auth_service.js";
+import { FiBookmark, FiArrowRight, FiUser, FiLock, FiArrowLeft, FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
+    setError('');
 
     // Validate form
     if (!username || !password) {
-      setError("Username and password are required");
+      setError('Username and password are required');
       setLoading(false);
       return;
     }
 
     // Check for default credentials
-    if (username === "root" && password === "123456") {
+    if (username === 'root' && password === '123456') {
       // Store auth state in localStorage
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify({ username }));
-      navigate("/home");
-      return;
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify({ username }));
+      navigate('/home');
+      return
     }
-    console.log("o2");
 
     // API Call to login user
     try {
       const formData = {
         username: username,
-        password: password,
-      };
-      const response = await loginUser(formData);
+        password: password
+      }
+      const response = await loginUser(formData)
       if (response.status !== "error") {
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("user", JSON.stringify({ username }));
-        navigate("/home");
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('user', JSON.stringify({ username }));
+        navigate('/home');
       } else {
-        setError(response?.msg || "Invalid username or password");
+        setError(response?.msg || 'Invalid username or password');
         setLoading(false);
       }
     } catch (error) {
-      console.error("Error Logging user:", error);
+      console.error('Error Logging user:', error);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -115,12 +113,19 @@ const Login = () => {
                     <FiLock className="h-5 w-5 text-white/50" />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
+                    className="w-full pl-10 pr-10 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent"
                     placeholder="Enter password"
                   />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {showPassword ? <FiEyeOff className="h-5 w-5" /> : <FiEye className="h-5 w-5" />}
+                  </button>
                 </div>
               </div>
 
