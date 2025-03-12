@@ -129,6 +129,16 @@ const Navbar = ({
 
             {/* Right side - Theme toggle, Upload and Profile */}
             <div className="flex items-center">
+              {/* Upload button */}
+              <button
+                onClick={openImportModal}
+                className="ml-2 px-3 py-2 rounded-md hover:bg-white/10 transition-all duration-200 flex items-center hover:scale-105"
+                aria-label="Import bookmarks"
+              >
+                <FiUpload className="h-5 w-5 mr-1" />
+                <span className="hidden md:block">Import</span>
+              </button>
+
               {/* Theme toggle */}
               <button
                 onClick={toggleDarkMode}
@@ -140,16 +150,6 @@ const Navbar = ({
                 ) : (
                   <FiMoon className="h-6 w-6" />
                 )}
-              </button>
-
-              {/* Upload button */}
-              <button
-                onClick={openImportModal}
-                className="ml-2 px-3 py-2 rounded-md hover:bg-white/10 transition-all duration-200 flex items-center hover:scale-105"
-                aria-label="Import bookmarks"
-              >
-                <FiUpload className="h-5 w-5 mr-1" />
-                <span className="hidden md:block">Import</span>
               </button>
 
               {/* User dropdown */}
@@ -164,12 +164,14 @@ const Navbar = ({
                     <div className="h-8 w-8 bg-white/20 rounded-full flex items-center justify-center mr-2">
                       <FiUser className="h-4 w-4" />
                     </div>
-                    <span className="hidden md:block">{username || "User"}</span>
+                    <span className="hidden md:block">
+                      {username || "User"}
+                    </span>
                     <FiChevronDown className="ml-2 h-4 w-4" />
                   </button>
                 }
                 menu={
-                  <div className="py-1">
+                  <div className="origin-top-right fixed right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none animate-fade-in z-50">
                     <button
                       onClick={handleProfile}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
